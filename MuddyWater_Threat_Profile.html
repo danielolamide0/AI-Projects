@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MuddyWater — Threat Actor Profile</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #06080f;
+    font-family: 'Inter', sans-serif;
+    color: #ccd6e8;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: #06080f;
+    border-bottom: 2px solid #c00000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.55rem 1.4rem;
+  }
+  nav .brand { color: #fff; font-weight: 800; font-size: 1rem; letter-spacing: 0.04em; }
+  nav .brand span { color: #c00000; }
+  .nav-dots { display: flex; gap: 0.5rem; }
+  .nav-dots button {
+    width: 10px; height: 10px; border-radius: 50%;
+    border: none; cursor: pointer;
+    background: #2a3550; transition: background .2s;
+  }
+  .nav-dots button.active { background: #c00000; }
+
+  /* ── SLIDES WRAPPER ── */
+  .deck {
+    padding-top: 52px;
+  }
+
+  /* ── SINGLE SLIDE ── */
+  .slide {
+    min-height: 100vh;
+    padding: 3.5rem 4rem 3rem;
+    border-bottom: 3px solid #12192e;
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: flex-start;
+  }
+  .slide::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: #c00000;
+  }
+
+  /* ── HEADER ── */
+  .slide-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+    color: #c00000; text-transform: uppercase; margin-bottom: 0.4rem;
+  }
+  .slide-title {
+    font-size: 2rem; font-weight: 800; color: #fff;
+    line-height: 1.15; margin-bottom: 0.5rem;
+  }
+  .slide-sub {
+    font-size: 0.85rem; color: #e86c00; font-style: italic;
+    margin-bottom: 0.3rem;
+  }
+  .rule {
+    height: 3px; background: #c00000;
+    margin: 0.7rem 0 1.6rem;
+  }
+  .rule-thin { height: 1px; background: #2a3550; margin: 0.6rem 0; }
+
+  /* ── CARDS GRID ── */
+  .cards { display: grid; gap: 1.2rem; }
+  .cards-3 { grid-template-columns: repeat(3, 1fr); }
+  .cards-4 { grid-template-columns: repeat(2, 1fr); }
+  .cards-2 { grid-template-columns: repeat(2, 1fr); }
+
+  .card {
+    background: #0f1626;
+    border-top: 3px solid #c00000;
+    border-radius: 3px;
+    padding: 1.1rem 1.2rem 1.2rem;
+  }
+  .card-title {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+    color: #e86c00; text-transform: uppercase; margin-bottom: 0.7rem;
+  }
+  .card ul { list-style: none; padding: 0; }
+  .card ul li {
+    position: relative; padding-left: 1rem;
+    font-size: 0.88rem; color: #ccd6e8;
+    margin-bottom: 0.45rem; line-height: 1.4;
+  }
+  .card ul li::before {
+    content: '';
+    position: absolute; left: 0; top: 0.48em;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #e86c00;
+  }
+
+  /* ── INSIGHT / ALERT BOXES ── */
+  .insight {
+    background: #0f1626;
+    border-top: 3px solid #e86c00;
+    border-radius: 3px;
+    padding: 1rem 1.3rem;
+    margin-top: 1.2rem;
+  }
+  .insight .label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    color: #e86c00; text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .insight p { font-size: 0.9rem; line-height: 1.6; color: #ccd6e8; }
+
+  .alert {
+    background: #180404;
+    border-top: 3px solid #c00000;
+    border-radius: 3px;
+    padding: 0.85rem 1.3rem;
+    margin-top: 1.2rem;
+  }
+  .alert p { font-size: 0.88rem; color: #ff8080; font-weight: 600; line-height: 1.5; }
+
+  .note {
+    background: #0f1626;
+    border-top: 3px solid #e86c00;
+    border-radius: 3px;
+    padding: 0.85rem 1.3rem;
+    margin-top: 1.2rem;
+  }
+  .note p { font-size: 0.9rem; color: #ffcc88; line-height: 1.6; }
+
+  .closing {
+    background: #120404;
+    border-top: 2px solid #c00000;
+    border-radius: 3px;
+    padding: 1rem 1.3rem;
+    margin-top: 1.2rem;
+  }
+  .closing p { font-size: 0.95rem; color: #fff; font-style: italic; line-height: 1.6; }
+
+  /* ── SLIDE 1: TITLE ── */
+  .title-slide {
+    justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 20% 50%, #1a0505 0%, #0a0d1a 60%);
+  }
+  .tag-badge {
+    display: inline-block;
+    background: #c00000;
+    color: #fff; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.3rem 0.8rem; margin-bottom: 1.2rem;
+    border-radius: 2px;
+  }
+  .mega-title {
+    font-size: 5.5rem; font-weight: 800; color: #fff;
+    line-height: 1; letter-spacing: -0.02em;
+    margin-bottom: 0.3rem;
+  }
+  .mega-rule { height: 4px; background: #c00000; margin: 1rem 0; max-width: 820px; }
+  .aliases {
+    font-size: 1.05rem; font-weight: 700; color: #e86c00;
+    margin-bottom: 0.6rem; letter-spacing: 0.05em;
+  }
+  .descriptor { font-size: 0.95rem; color: #ccd6e8; margin-bottom: 2.5rem; }
+  .meta-bar {
+    border-top: 1px solid #2a3550;
+    padding-top: 0.6rem;
+    font-size: 0.72rem; color: #889aaa; letter-spacing: 0.06em;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    display: flex; gap: 0; margin-top: 1.4rem;
+    border-top: 3px solid #c00000; padding-top: 0.8rem;
+  }
+  .tl-item {
+    flex: 1; padding-right: 1rem; position: relative;
+  }
+  .tl-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #c00000; margin-bottom: 0.4rem;
+  }
+  .tl-date { font-size: 0.72rem; font-weight: 700; color: #c00000; }
+  .tl-desc { font-size: 0.78rem; color: #889aaa; margin-top: 0.2rem; line-height: 1.3; }
+
+  /* ── MITRE TABLE ── */
+  .mitre-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+  .mitre-table tr { border-bottom: 1px solid #1a2236; }
+  .mitre-table td { padding: 0.45rem 0.6rem; font-size: 0.85rem; vertical-align: middle; }
+  .mitre-id {
+    background: #c00000; color: #fff;
+    font-weight: 700; font-size: 0.78rem;
+    white-space: nowrap; border-radius: 2px;
+    padding: 0.3rem 0.6rem; width: 120px;
+  }
+  .mitre-desc { color: #ccd6e8; }
+
+  /* ── TAKEAWAY BOXES ── */
+  .takeaways { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 0.5rem; }
+  .takeaway {
+    background: #0f1626;
+    border-top: 3px solid #c00000;
+    border-radius: 3px;
+    padding: 1.1rem 1.2rem;
+  }
+  .takeaway-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; background: #c00000;
+    color: #fff; font-weight: 800; font-size: 0.9rem;
+    border-radius: 2px; margin-bottom: 0.6rem;
+  }
+  .takeaway-title {
+    font-size: 0.75rem; font-weight: 700; color: #e86c00;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.6rem;
+  }
+  .takeaway p { font-size: 0.88rem; color: #ccd6e8; line-height: 1.55; }
+
+  /* ── FOOTER ── */
+  .slide-footer {
+    margin-top: auto; padding-top: 1.5rem;
+    border-top: 1px solid #1a2236;
+    font-size: 0.7rem; color: #889aaa; letter-spacing: 0.06em;
+  }
+
+  /* ── SLIDE NUMBER ── */
+  .slide-num {
+    position: absolute; right: 2rem; top: 3.5rem;
+    font-size: 0.7rem; color: #2a3550; font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .slide { padding: 2.5rem 1.5rem 2rem; }
+    .cards-3, .cards-4, .cards-2, .takeaways {
+      grid-template-columns: 1fr;
+    }
+    .mega-title { font-size: 3.5rem; }
+    .timeline { flex-direction: column; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="brand"><span>MUDDY</span>WATER — Threat Profile</div>
+  <div class="nav-dots" id="navDots"></div>
+</nav>
+
+<div class="deck" id="deck">
+
+  <!-- ══════════════════════════════ SLIDE 1 ══════════════════════════════ -->
+  <section class="slide title-slide" id="slide-1">
+    <div class="slide-num">01 / 08</div>
+    <div class="tag-badge">Threat Actor Profile &nbsp;|&nbsp; TLP:AMBER</div>
+    <div class="mega-title">MuddyWater</div>
+    <div class="mega-rule"></div>
+    <div class="aliases">AKA &nbsp; Seedworm &nbsp;|&nbsp; Mango Sandstorm &nbsp;|&nbsp; Static Kitten</div>
+    <div class="descriptor">Iranian State-Sponsored Advanced Persistent Threat</div>
+    <div class="meta-bar">Classification: TLP:AMBER &nbsp;&nbsp;|&nbsp;&nbsp; Date: March 2026 &nbsp;&nbsp;|&nbsp;&nbsp; MITRE ATT&CK Aligned</div>
+  </section>
+
+  <!-- ══════════════════════════════ SLIDE 2 ══════════════════════════════ -->
+  <section class="slide" id="slide-2">
+    <div class="slide-num">02 / 08</div>
+    <div class="slide-label">Background</div>
+    <div class="slide-title">Identity &amp; Strategic Motivation</div>
+    <div class="slide-sub">Who are they and what do they want?</div>
+    <div class="rule"></div>
+
+    <div class="cards cards-3">
+      <div class="card">
+        <div class="card-title">Affiliation</div>
+        <ul>
+          <li>Iranian Ministry of Intelligence and Security (MOIS)</li>
+          <li>Operational since ~2017</li>
+          <li>Formally attributed by CISA &amp; NSA</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Primary Objective</div>
+        <ul>
+          <li>Strategic Espionage</li>
+          <li>Long-term network persistence</li>
+          <li>Geopolitical intelligence gathering</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Target Sectors</div>
+        <ul>
+          <li>Telecommunications &amp; ISPs</li>
+          <li>Government &amp; Defence</li>
+          <li>Middle East &amp; United States</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <div class="label">Key Insight</div>
+      <p>MuddyWater does not hack for financial gain. They conduct long-term reconnaissance — staying "quiet" inside networks for months — to extract political, economic, and military intelligence aligned with Iran's foreign policy goals.</p>
+    </div>
+
+    <div class="slide-footer">Classification: TLP:AMBER &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; MITRE ATT&CK Aligned</div>
+  </section>
+
+  <!-- ══════════════════════════════ SLIDE 3 ══════════════════════════════ -->
+  <section class="slide" id="slide-3">
+    <div class="slide-num">03 / 08</div>
+    <div class="slide-label">Case Study</div>
+    <div class="slide-title">Operation Epic Fury</div>
+    <div class="slide-sub">High-Profile Breaches &amp; Tactical Shift &nbsp;|&nbsp; March 2026</div>
+    <div class="rule"></div>
+
+    <div class="cards cards-2">
+      <div class="card">
+        <div class="card-title">High-Profile Incidents</div>
+        <ul>
+          <li>FBI Director Kash Patel — personal email breach (Mar 27)</li>
+          <li>Documents &amp; photos leaked, confirmed by FBI via BBC</li>
+          <li>U.S. Banking &amp; Aerospace infrastructure targeted</li>
+          <li>Major international airport systems compromised</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1.2rem;">
+        <div class="card">
+          <div class="card-title">New Malware: Dinoo / Dindoor</div>
+          <ul>
+            <li>JavaScript-based backdoor (2026 debut)</li>
+            <li>Deployed via Deno runtime — evades AV</li>
+            <li>Confirmed by Broadcom Symantec / Carbon Black</li>
+            <li>Active against U.S. defence contractors</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Strategic Shift</div>
+          <ul>
+            <li>From pure espionage → psychological influence ops</li>
+            <li>Weaponising 'admin noise' (e.g. VOA/HMRC merger phishing)</li>
+            <li>Targets distracted employees during org change</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">Jan 2026</div><div class="tl-desc">Initial recon</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">Feb 2026</div><div class="tl-desc">Dinoo deployed</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">Mar 15</div><div class="tl-desc">Bank &amp; Airport hit</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">Mar 27</div><div class="tl-desc">FBI Director breach</div></div>
+    </div>
+
+    <div class="slide-footer">Classification: TLP:AMBER &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; MITRE ATT&CK Aligned</div>
+  </section>
+
+  <!-- ══════════════════════════════ SLIDE 4 ══════════════════════════════ -->
+  <section class="slide" id="slide-4">
+    <div class="slide-num">04 / 08</div>
+    <div class="slide-label">SFIA: SCAD — Security Operations</div>
+    <div class="slide-title">SOC Detection — Advanced Indicators of Concern</div>
+    <div class="slide-sub">Looking past traditional malware alerts</div>
+    <div class="rule"></div>
+
+    <div class="cards cards-4">
+      <div class="card">
+        <div class="card-title">Dinoo Signature</div>
+        <ul>
+          <li>Execution via Deno.exe (JS runtime)</li>
+          <li>Unusual child process from dev tool</li>
+          <li>Obfuscated .js payload on disk</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">RMM Abuse</div>
+        <ul>
+          <li>Unauthorised SimpleHelp sessions</li>
+          <li>Atera / ScreenConnect anomalies</li>
+          <li>Admin tool → external IP egress</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Cloud Hijacking</div>
+        <ul>
+          <li>Malicious scripts via MS Intune</li>
+          <li>Rogue 'Global Admin' account creation</li>
+          <li>Entra ID sign-in from TOR / VPN</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">C2 Traffic</div>
+        <ul>
+          <li>Telegram Bot API calls from endpoints</li>
+          <li>Dropbox / cloud storage exfiltration</li>
+          <li>Beaconing on non-standard intervals</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert">
+      <p>PRIORITY INDICATOR — Admin tool (SimpleHelp / Atera) communicating with Telegram Bot API = IMMEDIATE HIGH-PRIORITY INCIDENT. Maps directly to MuddyWater playbook.</p>
+    </div>
+
+    <div class="slide-footer">Classification: TLP:AMBER &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; MITRE ATT&CK Aligned</div>
+  </section>
+
+  <!-- ══════════════════════════════ SLIDE 5 ══════════════════════════════ -->
+  <section class="slide" id="slide-5">
+    <div class="slide-num">05 / 08</div>
+    <div class="slide-label">SFIA: TECH — Specialist Advice</div>
+    <div class="slide-title">Recognition &amp; Attribution</div>
+    <div class="slide-sub">MITRE ATT&CK Mapping &amp; Known TTPs</div>
+    <div class="rule"></div>
+
+    <div class="cards cards-2">
+      <div class="card">
+        <div class="card-title">Known Tactics, Techniques &amp; Procedures</div>
+        <ul>
+          <li>PowerShell-heavy lateral movement (T1059.001)</li>
+          <li>Ligolo-ng for internal network tunnelling</li>
+          <li>LSASS credential dumping (T1003.001)</li>
+          <li>Spearphishing with lure documents (T1566.001)</li>
+          <li>Living-off-the-Land — no custom malware in early stages</li>
+          <li>Persistent RMM implant for long-haul access</li>
+        </ul>
+      </div>
+      <div>
+        <div class="card-title" style="color:#e86c00;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.7rem;">MITRE ATT&amp;CK Techniques</div>
+        <table class="mitre-table">
+          <tr><td><span class="mitre-id">T1059.001</span></td><td class="mitre-desc">PowerShell Execution</td></tr>
+          <tr><td><span class="mitre-id">T1572</span></td><td class="mitre-desc">Protocol Tunnelling (Ligolo-ng)</td></tr>
+          <tr><td><span class="mitre-id">T1078</span></td><td class="mitre-desc">Valid Accounts — RMM</td></tr>
+          <tr><td><span class="mitre-id">T1071.001</span></td><td class="mitre-desc">Web Protocols — Telegram C2</td></tr>
+          <tr><td><span class="mitre-id">T1003.001</span></td><td class="mitre-desc">OS Credential Dumping</td></tr>
+          <tr><td><span class="mitre-id">T1566.001</span></td><td class="mitre-desc">Spearphishing Attachment</td></tr>
+          <tr><td><span class="mitre-id">T1021.001</span></td><td class="mitre-desc">Remote Desktop Protocol</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="insight">
+      <p><em>High-confidence attribution enables predictive defence — if we see PowerShell + Ligolo-ng + SimpleHelp, we know their next target will be database servers. We move to protect them proactively.</em></p>
+    </div>
+
+    <div class="slide-footer">Classification: TLP:AMBER &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; MITRE ATT&CK Aligned</div>
+  </section>
+
+  <!-- ══════════════════════════════ SLIDE 6 ══════════════════════════════ -->
+  <section class="slide" id="slide-6">
+    <div class="slide-num">06 / 08</div>
+    <div class="slide-label">SFIA: USUP — Incident Management</div>
+    <div class="slide-title">Tactical Response &amp; Containment</div>
+    <div class="slide-sub">Speed of attacker = Speed of response</div>
+    <div class="rule"></div>
+
+    <div class="cards cards-4">
+      <div class="card">
+        <div class="card-title">1 &nbsp; Identity-First</div>
+        <ul>
+          <li>Revoke ALL session tokens immediately</li>
+          <li>Force password resets for admin accounts</li>
+          <li>Disable compromised service principals</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">2 &nbsp; Endpoint Lockdown</div>
+        <ul>
+          <li>Quarantine Deno.exe runtime</li>
+          <li>Isolate host from network segment</li>
+          <li>Kill &amp; remove Dindoor JS backdoor</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">3 &nbsp; Cloud Control</div>
+        <ul>
+          <li>Audit Intune for rogue scripts</li>
+          <li>Remove unauthorised Global Admin roles</li>
+          <li>Review Entra ID Conditional Access logs</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">4 &nbsp; Network / C2 Block</div>
+        <ul>
+          <li>Block Telegram API at perimeter firewall</li>
+          <li>Null-route known Dinoo/Dindoor domains</li>
+          <li>Disable unauthorised RMM (SimpleHelp)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><strong>STRYKER PRECEDENT —</strong> MuddyWater used Microsoft Intune to wipe systems company-wide. Revoking session tokens locks the attacker out of the cloud console instantly before a single wipe command can propagate.</p>
+    </div>
+
+    <div class="slide-footer">Classification: TLP:AMBER &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; MITRE ATT&CK Aligned</div>
+  </section>
+
+  <!-- ══════════════════════════════ SLIDE 7 ══════════════════════════════ -->
+  <section class="slide" id="slide-7">
+    <div class="slide-num">07 / 08</div>
+    <div class="slide-label">SFIA: SLMO / RLMT — Service Level &amp; Stakeholder Management</div>
+    <div class="slide-title">Recovery &amp; Stakeholder Support</div>
+    <div class="slide-sub">Beyond the reboot</div>
+    <div class="rule"></div>
+
+    <div class="cards cards-3">
+      <div class="card">
+        <div class="card-title">Eradication</div>
+        <ul>
+          <li>Threat hunt for 'sleeping' backdoors</li>
+          <li>Full forensic sweep of all endpoints</li>
+          <li>Validate clean re-images via hashing</li>
+          <li>Confirm no persistence in scheduled tasks</li>
+          <li>Verify cloud config post-remediation</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Credential Hardening</div>
+        <ul>
+          <li>Enforce MFA resets org-wide</li>
+          <li>Rotate all privileged service accounts</li>
+          <li>Implement Conditional Access policies</li>
+          <li>Review &amp; tighten admin role assignments</li>
+          <li>Enable Entra ID Identity Protection</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Stakeholder Support</div>
+        <ul>
+          <li>Clear, jargon-free comms to impacted teams</li>
+          <li>Explain WHY security measures are needed</li>
+          <li>Just-in-Time phishing simulation training</li>
+          <li>Turn breach into a learning opportunity</li>
+          <li>Strengthen SOC–business relationship</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <p><em>"Recovery is more than a reboot. It is rebuilding trust — with the network, with users, and with the business."</em></p>
+    </div>
+
+    <div class="slide-footer">Classification: TLP:AMBER &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; MITRE ATT&CK Aligned</div>
+  </section>
+
+  <!-- ══════════════════════════════ SLIDE 8 ══════════════════════════════ -->
+  <section class="slide" id="slide-8">
+    <div class="slide-num">08 / 08</div>
+    <div class="slide-label">Summary</div>
+    <div class="slide-title">Conclusion &amp; Key Takeaways</div>
+    <div class="rule"></div>
+
+    <div class="takeaways">
+      <div class="takeaway">
+        <div class="takeaway-num">1</div>
+        <div class="takeaway-title">Adaptive &amp; State-Aligned</div>
+        <p>MuddyWater evolves its tooling — from simple PowerShell to custom JS backdoors — but its espionage mission never changes.</p>
+      </div>
+      <div class="takeaway">
+        <div class="takeaway-num">2</div>
+        <div class="takeaway-title">RMM Abuse Is the Kill Chain</div>
+        <p>Early detection of unauthorised RMM tools (SimpleHelp, Atera) communicating with Telegram is the single highest-value detection.</p>
+      </div>
+      <div class="takeaway">
+        <div class="takeaway-num">3</div>
+        <div class="takeaway-title">Proactive SOC Wins</div>
+        <p>Attribution-driven threat hunting and strong user relationships let the SOC predict attacker movement and protect assets before they're hit.</p>
+      </div>
+    </div>
+
+    <div class="closing">
+      <p>"MuddyWater uses our own tools against us. A SOC that monitors for unusual behaviour and maintains strong relationships with its users can effectively neutralise this threat."</p>
+    </div>
+
+    <div class="rule-thin" style="margin-top:1.5rem;"></div>
+    <div style="font-size:0.72rem;color:#889aaa;letter-spacing:0.06em;text-align:center;padding-top:0.5rem;">
+      Classification: TLP:AMBER &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; MITRE ATT&CK Aligned
+    </div>
+
+    <div class="slide-footer"></div>
+  </section>
+
+</div><!-- /deck -->
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const navDots = document.getElementById('navDots');
+
+  slides.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.title = `Slide ${i + 1}`;
+    btn.addEventListener('click', () => {
+      slides[i].scrollIntoView({ behavior: 'smooth' });
+    });
+    navDots.appendChild(btn);
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(slides).indexOf(entry.target);
+        document.querySelectorAll('.nav-dots button').forEach((b, i) => {
+          b.classList.toggle('active', i === idx);
+        });
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
